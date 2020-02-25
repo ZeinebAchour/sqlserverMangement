@@ -1,0 +1,148 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Data.SqlClient;
+@{
+    ViewData["Title"] = "DatabasesList";
+}
+
+
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>BASES DE DONNEES</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="Home/Index">HOME</a></li>
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Bases de données system</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+
+                @{
+                    string connectionString1 = "Data Source=ZIZOU-PC\\SQLEXPRESS; Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString1))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases ; ", con);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        do
+                        {
+                            int count = dr.FieldCount;
+                            while (dr.Read())
+
+                            {
+                                @for (int i = 0; i < count; i++)
+                                {
+                                    @dr.GetValue(i);<br />
+
+                                }
+                            }
+                        } while (dr.NextResult());
+                    }
+
+                }
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                Footer
+            </div>
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Bases de données 
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+
+                @{
+                    string connectionString2 = "Data Source=ZIZOU-PC\\SQLEXPRESS; Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString2))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases ; ", con);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        do
+                        {
+                            int count = dr.FieldCount;
+                            while (dr.Read())
+
+                            {
+                                @for (int i = 0; i < count; i++)
+                                {
+                                    @dr.GetValue(i);<br />
+
+                                }
+                            }
+                        } while (dr.NextResult());
+                    }
+
+                }
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                Footer
+            </div>
+            <!-- /.card-footer-->
+        </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+
+
+

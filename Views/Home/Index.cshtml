@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Blank Page</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Blank Page</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Title</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+
+
+
+                <br />
+                <div> Instances list</div>
+                <br />
+
+                @{ string connectionString11 = "Data Source=ZIZOU-PC\\SQLEXPRESS;" +
+                                                               " Initial Catalog = BDManegement;" +
+                                                               " Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString11))
+                    {
+                        con.Open();
+
+                        var instanceKey = ViewBag.Message1;
+                        var ServerName = ViewBag.Message2;
+                        SqlCommand check_Instance_Name = new SqlCommand("SELECT COUNT(*) FROM Instances WHERE ([Title] = @titreIns1)", con);
+                        check_Instance_Name.Parameters.Add("@titreIns1", SqlDbType.NVarChar);
+
+                        using (SqlCommand cmd = new SqlCommand(" insert into  Instances([Title]) values (@titreIns)", con))
+                        {
+                            SqlParameter @titreIns = new SqlParameter();
+                            cmd.Parameters.Add("@titreIns", SqlDbType.NVarChar);
+
+                            if (instanceKey != null)
+                            {
+
+                                foreach (var instanceName in instanceKey.GetValueNames())
+                                {
+                                    check_Instance_Name.Parameters["@titreIns1"].Value = @instanceName;
+                                    int InsExist = (int)check_Instance_Name.ExecuteScalar();
+
+                                    if (InsExist == 0)
+                                    {
+                                        cmd.Parameters["@titreIns"].Value = @instanceName;
+                                        //cmd.Parameters.AddWithValue("@titreIns", @instanceName);
+
+                                        cmd.ExecuteNonQuery();
+                                    }
+
+
+
+
+
+                                }
+                            }
+                        }
+                        con.Close();
+                    }
+                }
+                <br />
+
+                <!--<p> ServerName//instanceName</p> <br />-->
+                <div>Databases list</div>
+                <br />
+                @{
+                    string connectionString1 = "Data Source=ZIZOU-PC\\SQLEXPRESS; Initial Catalog = BDManegement;Integrated Security=True; MultipleActiveResultSets=true;";
+                    using (SqlConnection con = new SqlConnection(connectionString1))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases ; ", con);
+                        SqlParameter @titreDB = new SqlParameter();
+                        SqlParameter @titreDB1 = new SqlParameter();
+
+
+
+                        SqlCommand check_Database_Name = new SqlCommand("SELECT COUNT(*) FROM BDs WHERE ([Title] = @titreDB1)", con);
+                        check_Database_Name.Parameters.Add("@titreDB1", SqlDbType.NVarChar);
+
+
+                        using (SqlCommand cmd1 = new SqlCommand("insert into  BDs  ([Title]) values (@titreDB) ", con))
+                        {
+
+                            cmd1.Parameters.Add("@titreDB", SqlDbType.NVarChar);
+
+                            SqlDataReader dr = cmd.ExecuteReader();
+                            do
+                            {
+                                int count = dr.FieldCount;
+                                while (dr.Read())
+
+                                {
+                                    @for (int i = 0; i < count; i++)
+                                    {
+                                        // @dr.GetValue(i);<br />
+                                        check_Database_Name.Parameters["@titreDB1"].Value = @dr.GetValue(i); 
+                                        int DBExist = (int)check_Database_Name.ExecuteScalar();
+
+                                        if ( DBExist == 0)
+                                        {
+                                            cmd1.Parameters["@titreDB"].Value = @dr.GetValue(i);
+
+
+
+                                            cmd1.ExecuteNonQuery();
+                                        }
+
+
+
+
+                                    }
+                                }
+                            } while (dr.NextResult());
+                        }
+                        con.Close();
+                    }
+
+                }
+
+
+
+
+
+                <br />
+                <br />
+                <div>Database username list</div>
+
+
+
+                @{
+                    string connectionString = "Data Source=ZIZOU-PC\\SQLEXPRESS; Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("select name as username from sys.database_principals where type not in ('A', 'G', 'R', 'X') and sid is not null and name != 'guest' order by username; ", con);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        do
+                        {
+                            int count = dr.FieldCount;
+                            while (dr.Read())
+
+                            {
+                                @for (int i = 0; i < count; i++)
+                                {
+                                    @dr.GetValue(i)<br />
+
+                                }
+                            }
+                        } while (dr.NextResult());
+
+                    }
+                }
+
+
+
+                <br />
+                <br />
+                <div>Database Role name  list</div>
+
+
+                @{
+                    string connectionString2 = "Data Source=ZIZOU-PC\\SQLEXPRESS; Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString2))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT DP1.name AS DatabaseRoleName FROM sys.database_role_members AS DRM RIGHT OUTER JOIN sys.database_principals AS DP1 ON DRM.role_principal_id = DP1.principal_id LEFT OUTER JOIN sys.database_principals AS DP2 ON DRM.member_principal_id = DP2.principal_id WHERE DP1.type = 'R' ORDER BY DP1.name; ", con);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        do
+                        {
+                            int count = dr.FieldCount;
+                            while (dr.Read())
+
+                            {
+                                @for (int i = 0; i < count; i++)
+                                {
+                                    @dr.GetValue(i)<br />
+
+                                }
+                            }
+                        } while (dr.NextResult());
+
+                    }
+                }
+                <br />
+
+                <p>DATABASE TABLES NAME</p>
+
+
+
+                <br />
+                <p>table's columns </p>
+                <br />
+                @{
+                    string connectionString4 = "Data Source=ZIZOU-PC\\SQLEXPRESS; Integrated Security=True;";
+                    using (SqlConnection con = new SqlConnection(connectionString4))
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand(" select  col.name as column_name from sys.tables as tab inner join sys.columns as col on tab.object_id = col.object_id left join sys.types as t on col.user_type_id = t.user_type_id; ", con);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        do
+                        {
+                            int count = dr.FieldCount;
+                            while (dr.Read())
+
+                            {
+                                @for (int i = 0; i < count; i++)
+                                {
+                                    <li> @dr.GetValue(i)<br /></li>
+
+                                }
+
+
+
+                            }
+                        } while (dr.NextResult());
+
+                    }
+                }
+
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                Footer
+            </div>
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+@using System.Data.SqlClient;
+@using System.Data;
+
+
